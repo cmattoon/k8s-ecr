@@ -1,6 +1,8 @@
 cmattoon/k8s-ecr
 ================
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/cmattoon/k8s-ecr?style=for-the-badge)(https://hub.docker.com/repository/docker/cmattoon/k8s-ecr)]
+
 Keeps ECR credentials up-to-date in non-EKS clusters.
 
 Overview
