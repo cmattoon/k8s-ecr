@@ -7,8 +7,8 @@ ENV K8S_SECRET_NAMESPACE "default"
 
 WORKDIR /app
 
-COPY ecr-login.sh .
+COPY entrypoint.sh .
 
-RUN chmod +x ecr-login.sh
+RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["/app/ecr-login.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
