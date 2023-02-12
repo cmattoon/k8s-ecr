@@ -1,0 +1,17 @@
+=======================================
+ __ _  ____  ____      ____  ___  ____ 
+(  / )/ _  \/ ___) ___(  __)/ __)(  _ \
+ )  ( ) _  (\___ \(___)) _)( (__  )   /
+(__\_)\____/(____/    (____)\___)(__\_)
+{{ .Chart.Version }}
+=======================================
+
+AWS Default Region : {{ .Values.aws_region | default "us-east-1" }}
+AWS Account ID     : {{ .Values.aws_account_id | default "" | quote }}
+
+CronJob            : {{ include "k8s-ecr.fullname" . }}
+  ConfigMap        : {{ include "k8s-ecr.fullname" . }}
+  IAM Secret (in)  : {{ include "k8s-ecr.iam_secret" . }}
+  ECR Secret (out) : {{ include "k8s-ecr.ecr_secret" . }}
+
+

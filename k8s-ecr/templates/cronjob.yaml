@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k8s-ecr.fullname" . }}
+  labels:
+    {{- include "k8s-ecr.labels" . | nindent 4 }}
+data:
+  AWS_DEFAULT_REGION: {{ .Values.aws_region | default "us-east-1" }}
+  AWS_ACCOUNT_ID: {{ .Values.aws_account_id | default "" | quote }}
+  ECR_SECRET_NAME: {{ include "k8s-ecr.ecr_secret" . }}
+  ECR_SECRET_NAMESPACE: {{ .Values.aws_ecr_secret_namespace | default .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "k8s-ecr.fullname" . }}
+  labels:
+    {{- include "k8s-ecr.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.cron.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: {{ include "k8s-ecr.serviceAccountName" . }}
+          containers:
+            - name: k8s-ecr
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: {{ include "k8s-ecr.fullname" . }}
+                - secretRef:
+                    name: {{ include "k8s-ecr.iam_secret" . }}
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
